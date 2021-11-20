@@ -1,87 +1,33 @@
-
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using VinylCollection.Dtos;
+using System.Threading.Tasks;
+using VinylCollection.Controllers;
 using VinylCollection.Entities;
-using VinylCollection.Repositories;
+using Microsoft.AspNetCore.Mvc;
+using VinylCollection.Persistence;
+using Microsoft.EntityFrameworkCore;
 
 namespace VinylCollection.Controllers
 {
-    [ApiController]
-    [Route("vinyls")]
-    public class VinylsController : ControllerBase
+    public class VinylsController : BaseApiController
     {
-        private readonly IMemVinylsRepository _repository;
-
-        public VinylsController(IMemVinylsRepository repository)
+        private readonly DataContext _context;
+        public VinylsController(DataContext context)
         {
-            _repository = repository;
+            _context = context;
+
         }
 
         [HttpGet]
-        public IEnumerable<VinylDto> GetVinyls()
+        public async Task<ActionResult<List<Vinyl>>> getVinyls()
         {
-            var vinyls = _repository.GetVinyls().Select(vinyl => vinyl.AsDto());
-            return vinyls;
+            return await _context.Vinyls.ToListAsync();
         }
 
         [HttpGet("{id}")]
-        public ActionResult<VinylDto> GetVinyl(Guid id)
+        public async Task<ActionResult<Vinyl>> GetVinyl(Guid id)
         {
-            var vinyl = _repository.GetVinyl(id);
-            if (vinyl is null)
-            {
-                return NotFound();
-            }
-            return Ok(vinyl.AsDto());
-        }
-        [HttpPost]
-        public ActionResult<VinylDto> CreateVinyl(CreateVinylDto vinylDto)
-        {
-            Vinyl vinyl = new()
-            {
-                Id = Guid.NewGuid(),
-                Title = vinylDto.Title,
-                Artist = vinylDto.Artist
-            };
-            _repository.CreateVinyl(vinyl);
-            return CreatedAtAction(nameof(GetVinyl), new { id = vinyl.Id }, vinyl.AsDto());
-        }
-        [HttpPut("{id}")]
-        public ActionResult UpdateItem(Guid id, UpdateVinylDto vinylDto)
-        {
-            var existingVinyl = _repository.GetVinyl(id);
-
-            if (existingVinyl is null)
-            {
-                return NotFound();
-            }
-
-            Vinyl updatedVinyl = existingVinyl with
-            {
-                Title = vinylDto.Title,
-                Artist = vinylDto.Artist
-            };
-            _repository.UpdateVinyl(updatedVinyl);
-
-            return NoContent();
-        }
-        [HttpDelete("{id}")]
-
-        public ActionResult DeleteItem(Guid id)
-        {
-            var existingVinyl = _repository.GetVinyl(id);
-
-            if (existingVinyl is null)
-            {
-                return NotFound();
-            }
-            _repository.DeleteVinyl(id);
-            return NoContent();
-
+            return await _context.Vinyls.FindAsync(id);
         }
 
     }

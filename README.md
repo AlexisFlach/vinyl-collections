@@ -17,3 +17,7 @@ dotnet dev-certs https --trust
 ```
 
 Fler instruktioner kommer strax.
+
+NuGet Gallery
+
+microsoft.entityframeworkcore
