@@ -13,38 +13,40 @@ namespace VinylCollection.Controllers
     {
 
         [HttpGet]
-        public async Task<ActionResult<List<Vinyl>>> getVinyls()
+        public async Task<IActionResult> getVinyls()
         {
-            return await Mediator.Send(new List.Query());
+            return HandleResult(await Mediator.Send(new List.Query()));
         }
 
         [HttpGet("{id}")]
-        public async Task<ActionResult<Vinyl>> GetVinyl(Guid id)
+        public async Task<IActionResult> GetVinyl(Guid id)
         {
-            return await Mediator.Send(new Details.Query { Id = id });
+            var result = await Mediator.Send(new Details.Query { Id = id });
+
+            return HandleResult(result);
+          
         }
 
         [HttpPost]
-
         public async Task<IActionResult> CreateVinyl(Vinyl vinyl)
         {
-            return Ok(await Mediator.Send(new Create.Command { Vinyl = vinyl }));
+            return HandleResult(await Mediator.Send(new Create.Command { Vinyl = vinyl }));
         }
-
 
         [HttpPut("{id}")]
         public async Task<IActionResult> EditVinyl(Guid id, Vinyl vinyl)
         {
             vinyl.Id = id;
-            return Ok(await Mediator.Send(new Edit.Command
+            return HandleResult(await Mediator.Send(new Edit.Command
             {
-                vinyl = vinyl
+                Vinyl = vinyl
             }));
         }
+
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteVinyl(Guid id)
         {
-            return Ok(await Mediator.Send(new Delete.Command
+            return HandleResult(await Mediator.Send(new Delete.Command
             {
                 id = id
             }));

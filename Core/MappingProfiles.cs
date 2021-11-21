@@ -9,6 +9,6 @@ namespace VinylCollection.Core
         {
             CreateMap<Vinyl, Vinyl>();
         }
-        
+
     }
 }
