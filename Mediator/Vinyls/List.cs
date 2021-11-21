@@ -3,6 +3,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
+using VinylCollection.Core;
 using VinylCollection.Entities;
 using VinylCollection.Persistence;
 
@@ -10,9 +11,9 @@ namespace VinylCollection.Mediator
 {
     public class List
     {
-        public class Query : IRequest<List<Vinyl>> { }
+        public class Query : IRequest<Result<List<Vinyl>>> { }
 
-        public class Handler : IRequestHandler<Query, List<Vinyl>>
+        public class Handler : IRequestHandler<Query, Result<List<Vinyl>>>
         {
             private readonly DataContext _context;
 
@@ -21,9 +22,9 @@ namespace VinylCollection.Mediator
                 _context = context;
 
             }
-            public async Task<List<Vinyl>> Handle(Query request, CancellationToken cancellationToken)
+            public async Task<Result<List<Vinyl>>> Handle(Query request, CancellationToken cancellationToken)
             {
-                return await _context.Vinyls.ToListAsync();
+                return Result<List<Vinyl>>.Success(await _context.Vinyls.ToListAsync());
             }
         }
     }

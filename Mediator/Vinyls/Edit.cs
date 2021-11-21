@@ -1,7 +1,9 @@
 using System.Threading;
 using System.Threading.Tasks;
 using AutoMapper;
+using FluentValidation;
 using MediatR;
+using VinylCollection.Core;
 using VinylCollection.Entities;
 using VinylCollection.Persistence;
 
@@ -9,12 +11,12 @@ namespace VinylCollection.Mediator.Vinyls
 {
     public class Edit
     {
-        public class Command : IRequest
+        public class Command : IRequest<Result<Unit>>
         {
-            public Vinyl vinyl { get; set; }
+            public Vinyl Vinyl { get; set; }
         }
 
-        public class Handler : IRequestHandler<Command>
+        public class Handler : IRequestHandler<Command, Result<Unit>>
         {
             private readonly DataContext _context;
             private readonly IMapper _mapper;
@@ -25,15 +27,26 @@ namespace VinylCollection.Mediator.Vinyls
                 _context = context;
             }
 
-            public async Task<Unit> Handle(Command request, CancellationToken cancellationToken)
+            public class CommandValidator : AbstractValidator<Command>
+        {
+            public CommandValidator() {
+                RuleFor(x => x.Vinyl).SetValidator(new VinylValidator());
+            }
+        }
+
+            public async Task<Result<Unit>> Handle(Command request, CancellationToken cancellationToken)
             {
-                var vinyl = await _context.Vinyls.FindAsync(request.vinyl.Id);
+                var vinyl = await _context.Vinyls.FindAsync(request.Vinyl.Id);
+                if(vinyl is null) return null;
 
-                _mapper.Map(request.vinyl, vinyl);
+                _mapper.Map(request.Vinyl, vinyl);
 
-                await _context.SaveChangesAsync();
+                var result = await _context.SaveChangesAsync() > 0;
 
-                return Unit.Value;
+                 if(!result) return Result<Unit>.Failure("Failed to update vinyl");
+
+                return Result<Unit>.Success(Unit.Value);   
+
             }
         }
     }
