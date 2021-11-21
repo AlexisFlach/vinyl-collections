@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Mvc;
 using VinylCollection.Dtos;
 using VinylCollection.Entities;
 using VinylCollection.Repositories;
+using VinylCollection.Extensions;
 
 namespace VinylCollection.Controllers
 {

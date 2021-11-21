@@ -1,7 +1,7 @@
 using VinylCollection.Dtos;
 using VinylCollection.Entities;
 
-namespace VinylCollection
+namespace VinylCollection.Extensions
 {
     public static class Extensions
     {

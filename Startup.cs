@@ -14,6 +14,10 @@ using Microsoft.OpenApi.Models;
 using VinylCollection.Repositories;
 using Microsoft.EntityFrameworkCore;
 using VinylCollection.Persistence;
+using MediatR;
+using VinylCollection.Mediator;
+using VinylCollection.Core;
+using VinylCollection.Extensions;
 
 namespace VinylCollection
 {
@@ -29,17 +33,8 @@ namespace VinylCollection
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-
-            services.AddSingleton<IMemVinylsRepository, InMemVinylsRepository>();
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "VinylCollection", Version = "v1" });
-            });
-            services.AddDbContext<DataContext>(opt =>
-            {
-                opt.UseSqlite(_config.GetConnectionString("DefaultConnection"));
-            });
+            services.AddApplicationServices(_config);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
