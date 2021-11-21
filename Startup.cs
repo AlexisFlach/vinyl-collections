@@ -12,27 +12,29 @@ using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using VinylCollection.Repositories;
+using Microsoft.EntityFrameworkCore;
+using VinylCollection.Persistence;
+using MediatR;
+using VinylCollection.Mediator;
+using VinylCollection.Core;
+using VinylCollection.Extensions;
 
 namespace VinylCollection
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly IConfiguration _config;
+        public Startup(IConfiguration config)
         {
-            Configuration = configuration;
-        }
+            _config = config;
 
-        public IConfiguration Configuration { get; }
+        }
 
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
-            services.AddSingleton<IMemVinylsRepository, InMemVinylsRepository>();
             services.AddControllers();
-            services.AddSwaggerGen(c =>
-            {
-                c.SwaggerDoc("v1", new OpenApiInfo { Title = "VinylCollection", Version = "v1" });
-            });
+            services.AddApplicationServices(_config);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

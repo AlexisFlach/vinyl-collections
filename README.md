@@ -1,19 +1,5 @@
-#### Web Api 
-```
-dotnet new webapi -n VinylCollection
-```
+#### Mediator
 
-```
-dotnet dev-certs https --trust
-```
+CQRS = Comman Query Responsibility Segregation
 
-**task.json**
-
-```
-"group": {
-	"kind": "build",
-	"isDefault": true
-}
-```
-
-Fler instruktioner kommer strax.
+MediatR.Extensions.Microsoft.DependencyInjection by Jimmy Bogard

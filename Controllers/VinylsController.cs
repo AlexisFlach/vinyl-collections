@@ -1,88 +1,53 @@
-
-
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using Microsoft.AspNetCore.Mvc;
-using VinylCollection.Dtos;
+using System.Threading.Tasks;
 using VinylCollection.Entities;
-using VinylCollection.Repositories;
+using Microsoft.AspNetCore.Mvc;
+
+using VinylCollection.Mediator;
+using VinylCollection.Mediator.Vinyls;
 
 namespace VinylCollection.Controllers
 {
-    [ApiController]
-    [Route("vinyls")]
-    public class VinylsController : ControllerBase
+    public class VinylsController : BaseApiController
     {
-        private readonly IMemVinylsRepository _repository;
-
-        public VinylsController(IMemVinylsRepository repository)
-        {
-            _repository = repository;
-        }
 
         [HttpGet]
-        public IEnumerable<VinylDto> GetVinyls()
+        public async Task<ActionResult<List<Vinyl>>> getVinyls()
         {
-            var vinyls = _repository.GetVinyls().Select(vinyl => vinyl.AsDto());
-            return vinyls;
+            return await Mediator.Send(new List.Query());
         }
 
         [HttpGet("{id}")]
-        public ActionResult<VinylDto> GetVinyl(Guid id)
+        public async Task<ActionResult<Vinyl>> GetVinyl(Guid id)
         {
-            var vinyl = _repository.GetVinyl(id);
-            if (vinyl is null)
-            {
-                return NotFound();
-            }
-            return Ok(vinyl.AsDto());
+            return await Mediator.Send(new Details.Query { Id = id });
         }
+
         [HttpPost]
-        public ActionResult<VinylDto> CreateVinyl(CreateVinylDto vinylDto)
+
+        public async Task<IActionResult> CreateVinyl(Vinyl vinyl)
         {
-            Vinyl vinyl = new()
-            {
-                Id = Guid.NewGuid(),
-                Title = vinylDto.Title,
-                Artist = vinylDto.Artist
-            };
-            _repository.CreateVinyl(vinyl);
-            return CreatedAtAction(nameof(GetVinyl), new { id = vinyl.Id }, vinyl.AsDto());
+            return Ok(await Mediator.Send(new Create.Command { Vinyl = vinyl }));
         }
+
+
         [HttpPut("{id}")]
-        public ActionResult UpdateItem(Guid id, UpdateVinylDto vinylDto)
+        public async Task<IActionResult> EditVinyl(Guid id, Vinyl vinyl)
         {
-            var existingVinyl = _repository.GetVinyl(id);
-
-            if (existingVinyl is null)
+            vinyl.Id = id;
+            return Ok(await Mediator.Send(new Edit.Command
             {
-                return NotFound();
-            }
-
-            Vinyl updatedVinyl = existingVinyl with
-            {
-                Title = vinylDto.Title,
-                Artist = vinylDto.Artist
-            };
-            _repository.UpdateVinyl(updatedVinyl);
-
-            return NoContent();
+                vinyl = vinyl
+            }));
         }
         [HttpDelete("{id}")]
-
-        public ActionResult DeleteItem(Guid id)
+        public async Task<IActionResult> DeleteVinyl(Guid id)
         {
-            var existingVinyl = _repository.GetVinyl(id);
-
-            if (existingVinyl is null)
+            return Ok(await Mediator.Send(new Delete.Command
             {
-                return NotFound();
-            }
-            _repository.DeleteVinyl(id);
-            return NoContent();
-
+                id = id
+            }));
         }
-
     }
 }
