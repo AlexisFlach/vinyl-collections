@@ -17,24 +17,20 @@ namespace VinylCollection.Repositories
         {
             return _collection;
         }
-
         public Vinyl GetVinyl(Guid id)
         {
             var vinyl = _collection.Where(vinyl => vinyl.Id == id);
             return vinyl.SingleOrDefault();
         }
-
         public void CreateVinyl(Vinyl vinyl)
         {
             _collection.Add(vinyl);
         }
-
         public void UpdateVinyl(Vinyl vinyl)
         {
             var index = _collection.FindIndex(exVinyl => exVinyl.Id == vinyl.Id);
             _collection[index] = vinyl;
         }
-
         public void DeleteVinyl(Guid id)
         {
             var index = _collection.FindIndex(exVinyl => exVinyl.Id == id);
