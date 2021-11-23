@@ -6,12 +6,13 @@ using VinylCollection.Entities;
 
 namespace VinylCollection.Repositories
 {
-        public class InMemVinylsRepository : IMemVinylsRepository
+        public class VinylsRepository : IVinylsRepository
         {
         private readonly List<Vinyl> _collection = new()
         {
             new Vinyl { Id = Guid.NewGuid(), Artist = "Bob Dylan", Title = "New Morning" },
-            new Vinyl { Id = Guid.NewGuid(), Artist = "Leonard Cohen", Title = "Ten New Songs" }
+            new Vinyl { Id = Guid.NewGuid(), Artist = "Leonard Cohen", Title = "Ten New Songs" },
+            new Vinyl { Id = Guid.NewGuid(), Artist = "Flamingokvintetten", Title = "Flamingokvintetten 12" }
         };
         public IEnumerable<Vinyl> GetVinyls()
         {

@@ -4,7 +4,7 @@ using VinylCollection.Entities;
 
 namespace VinylCollection.Repositories
 {
-    public interface IMemVinylsRepository
+    public interface IVinylsRepository
     {
         Vinyl GetVinyl(Guid id);
         IEnumerable<Vinyl> GetVinyls();

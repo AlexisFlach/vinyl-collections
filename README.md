@@ -351,6 +351,41 @@ public VinylsController()
 }
 ```
 
+**Dependency Inversion Principle**
+
+**Depend upon abstractions. Do not depend upon concrete classes.**
+
+Denna princip handlar om att reducera dependencies, istället för att använda oss av en konkret klass, så säger vi att repot ska vara av en viss typ. 
+
+```
+Class depends on Interface
+Dependencies implements Interface
+```
+
+```
+public VinylsController(IRepository repository)
+{
+	this.repository = repository;
+}
+```
+
+Vi måste registera våra dependencies i en Service Container **IServiceProvider**.
+
+**Startup.cs**
+
+```
+  public void ConfigureServices(IServiceCollection services)
+        {
+            // services.AddSingleton<IMemVinylsRepository, InMemVinylsRepository>();
+  			...
+            });
+        }
+```
+
+**Dto - Data Transfer Objects**
+
+
+
 
 
 Länkar:

@@ -1,10 +1,7 @@
-
-
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using Microsoft.AspNetCore.Mvc;
-using VinylCollection.Dtos;
 using VinylCollection.Entities;
 using VinylCollection.Repositories;
 
@@ -14,44 +11,46 @@ namespace VinylCollection.Controllers
     [Route("vinyls")]
     public class VinylsController : ControllerBase
     {
-        private readonly IMemVinylsRepository _repository;
+        private readonly IVinylsRepository _repository;
 
-        public VinylsController(IMemVinylsRepository repository)
+        public VinylsController(IVinylsRepository repository)
         {
             _repository = repository;
         }
 
         [HttpGet]
-        public IEnumerable<VinylDto> GetVinyls()
+        public IEnumerable<Vinyl> GetVinyls()
         {
-            var vinyls = _repository.GetVinyls().Select(vinyl => vinyl.AsDto());
+            var vinyls = _repository.GetVinyls().Select(vinyl => vinyl);
             return vinyls;
         }
 
         [HttpGet("{id}")]
-        public ActionResult<VinylDto> GetVinyl(Guid id)
+        public ActionResult<Vinyl> GetVinyl(Guid id)
         {
             var vinyl = _repository.GetVinyl(id);
             if (vinyl is null)
             {
                 return NotFound();
             }
-            return Ok(vinyl.AsDto());
+            return Ok(vinyl);
         }
+
         [HttpPost]
-        public ActionResult<VinylDto> CreateVinyl(CreateVinylDto vinylDto)
+        public ActionResult<Vinyl> CreateVinyl(Vinyl v)
         {
             Vinyl vinyl = new()
             {
                 Id = Guid.NewGuid(),
-                Title = vinylDto.Title,
-                Artist = vinylDto.Artist
+                Title = v.Title,
+                Artist = v.Artist
             };
             _repository.CreateVinyl(vinyl);
-            return CreatedAtAction(nameof(GetVinyl), new { id = vinyl.Id }, vinyl.AsDto());
+            return CreatedAtAction(nameof(GetVinyl), new { id = vinyl.Id }, vinyl);
         }
+        
         [HttpPut("{id}")]
-        public ActionResult UpdateItem(Guid id, UpdateVinylDto vinylDto)
+        public ActionResult UpdateItem(Guid id, Vinyl v)
         {
             var existingVinyl = _repository.GetVinyl(id);
 
@@ -59,18 +58,16 @@ namespace VinylCollection.Controllers
             {
                 return NotFound();
             }
+            
+            existingVinyl.Artist = v.Artist;
+            existingVinyl.Title = v.Title;
 
-            Vinyl updatedVinyl = existingVinyl with
-            {
-                Title = vinylDto.Title,
-                Artist = vinylDto.Artist
-            };
-            _repository.UpdateVinyl(updatedVinyl);
+            _repository.UpdateVinyl(existingVinyl);
 
             return NoContent();
         }
-        [HttpDelete("{id}")]
 
+        [HttpDelete("{id}")]
         public ActionResult DeleteItem(Guid id)
         {
             var existingVinyl = _repository.GetVinyl(id);
@@ -81,8 +78,6 @@ namespace VinylCollection.Controllers
             }
             _repository.DeleteVinyl(id);
             return NoContent();
-
         }
-
     }
 }
